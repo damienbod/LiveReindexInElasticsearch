@@ -22,6 +22,8 @@ namespace LiveReindexInElasticsearch
 
 			#endregion  Setup initial index, not required usually because the index should already exist...
 
+			// The following 3 steps show you how to doa reindex in elasticsearch using scroll and an alias with no downtime
+
 			// STEP 1: CREATE NEW INDEX persons_v2 from INDEX persons_v1 
 			DateTime beginDateTime = DateTime.UtcNow.AddYears(-7);
 			var reindex = new ReindexPersonV1ToPersonV2();
@@ -32,7 +34,7 @@ namespace LiveReindexInElasticsearch
 			reindex.SwitchAliasfromPersonV1IndexToPersonV2Index();
 			Console.WriteLine("Replace index for alias");
 
-			// STEP 4: NOW GET ALL THE DOCUMENTS WHICH WERE UPDATED WHILE REINDEXING
+			// STEP 3: NOW GET ALL THE DOCUMENTS WHICH WERE UPDATED WHILE REINDEXING
 			// NOTE: if the document is updated again in the meantime, it will be overwitten with this method. 
 			// If required, you must check the update timestamp of the item in the new index!
 			reindex.ReindexUpdateChangesWhileReindexing(beginDateTime);

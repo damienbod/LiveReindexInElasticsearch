@@ -22,8 +22,6 @@ namespace LiveReindexInElasticsearch
 
 			#endregion  Setup initial index, not required usually cause the index should already exist...
 
-
-
 			//Console.ReadLine();
 
 			// STEP 1: CREATE NEW INDEX persons_v2 from INDEX persons_v1 

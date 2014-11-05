@@ -9,7 +9,8 @@ namespace LiveReindexInElasticsearch.Reindex
 	public class ReindexPersonV1ToPersonV2
 	{
 		private readonly ElasticsearchContext _context;
-		private int indexerSize = 500;
+		private const int IndexerSize = 500;
+
 		public ReindexPersonV1ToPersonV2()
 		{
 			IElasticsearchMappingResolver elasticsearchMappingResolver = new ElasticsearchMappingResolver();		
@@ -33,11 +34,11 @@ namespace LiveReindexInElasticsearch.Reindex
 			Console.WriteLine("Total Hits in scan: {0}", result.TotalHits);
 
 			int indexPointer = 0;
-			while (result.TotalHits > indexPointer - indexerSize)
+			while (result.TotalHits > indexPointer - IndexerSize)
 			{
 				Console.WriteLine("creating new documents, indexPointer: {0} Hits: {1}", indexPointer, result.TotalHits);
 
-				var resultCollection = _context.Search<Person>(BuildSearchFromTooForScanScroll(indexPointer, indexerSize),
+				var resultCollection = _context.Search<Person>(BuildSearchFromTooForScanScroll(indexPointer, IndexerSize),
 					scrollId);
 
 				foreach (var item in resultCollection.PayloadResult)
@@ -45,24 +46,24 @@ namespace LiveReindexInElasticsearch.Reindex
 					_context.AddUpdateDocument(CreatePersonV2FromPerson(item), item.BusinessEntityID);
 				}
 				_context.SaveChanges();
-				indexPointer = indexPointer + indexerSize;
+				indexPointer = indexPointer + IndexerSize;
 			}
 		}
 
 		public void ReindexUpdateChangesWhileReindexing(DateTime beginDateTime)
 		{
 			var result = _context.SearchCreateScanAndScroll<Person>(BuildSearchModifiedDateTimeGreaterThan(beginDateTime),
-				new ScanAndScrollConfiguration(1, TimeUnits.Minute, indexerSize));
+				new ScanAndScrollConfiguration(1, TimeUnits.Minute, IndexerSize));
 
 			var scrollId = result.PayloadResult;
 			Console.WriteLine("Total Hits in scan: {0}", result.TotalHits);
 
 			int indexPointer = 0;
-			while (result.TotalHits > indexPointer - 100)
+			while (result.TotalHits > indexPointer - IndexerSize)
 			{
 				Console.WriteLine("creating new documents, indexPointer: {0} Hits: {1}", indexPointer, result.TotalHits);
 
-				var resultCollection = _context.Search<Person>(BuildSearchFromTooForScanScroll(indexPointer, indexerSize),
+				var resultCollection = _context.Search<Person>(BuildSearchFromTooForScanScroll(indexPointer, IndexerSize),
 					scrollId);
 
 				foreach (var item in resultCollection.PayloadResult)
@@ -70,7 +71,7 @@ namespace LiveReindexInElasticsearch.Reindex
 					_context.AddUpdateDocument(CreatePersonV2FromPerson(item), item.BusinessEntityID);
 				}
 				_context.SaveChanges();
-				indexPointer = indexPointer + indexerSize;
+				indexPointer = indexPointer + IndexerSize;
 			}
 		}
 
@@ -93,23 +94,6 @@ namespace LiveReindexInElasticsearch.Reindex
 				ModifiedDate = item.ModifiedDate,
 				Deleted = false
 			};
-		}
-
-		//{
-		//	"query" : {
-		//		"match_all" : {}
-		//	}
-		//}
-		private string BuildSearchMatchAll()
-		{
-			var buildJson = new StringBuilder();
-			buildJson.AppendLine("{");
-			buildJson.AppendLine("\"query\": {");
-			buildJson.AppendLine("\"match_all\" : {}");
-			buildJson.AppendLine("}");
-			buildJson.AppendLine("}");
-
-			return buildJson.ToString();
 		}
 
 		//{   

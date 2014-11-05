@@ -28,7 +28,7 @@ namespace LiveReindexInElasticsearch.Reindex
 		public void Reindex(DateTime beginDateTime)
 		{
 			var result = _context.SearchCreateScanAndScroll<Person>(BuildSearchModifiedDateTimeLessThan(beginDateTime),
-				new ScanAndScrollConfiguration(1, TimeUnits.Minute, 100));
+				new ScanAndScrollConfiguration(1, TimeUnits.Minute, 500));
 
 			var scrollId = result.PayloadResult;
 			Console.WriteLine("Total Hits in scan: {0}", result.TotalHits);
@@ -38,7 +38,7 @@ namespace LiveReindexInElasticsearch.Reindex
 			{
 				Console.WriteLine("creating new documents, indexPointer: {0} Hits: {1}", indexPointer, result.TotalHits);
 
-				var resultCollection = _context.Search<Person>(BuildSearchFromTooForScanScroll(indexPointer, IndexerSize),
+				var resultCollection = _context.Search<Person>(BuildSearchModifiedDateTimeLessThan(beginDateTime, BuildSearchFromTooForScanScroll(indexPointer, IndexerSize)),
 					scrollId);
 
 				foreach (var item in resultCollection.PayloadResult)
@@ -63,7 +63,7 @@ namespace LiveReindexInElasticsearch.Reindex
 			{
 				Console.WriteLine("creating new documents, indexPointer: {0} Hits: {1}", indexPointer, result.TotalHits);
 
-				var resultCollection = _context.Search<Person>(BuildSearchFromTooForScanScroll(indexPointer, IndexerSize),
+				var resultCollection = _context.Search<Person>(BuildSearchModifiedDateTimeGreaterThan(beginDateTime,BuildSearchFromTooForScanScroll(indexPointer, IndexerSize)),
 					scrollId);
 
 				foreach (var item in resultCollection.PayloadResult)
@@ -101,22 +101,17 @@ namespace LiveReindexInElasticsearch.Reindex
 		//}
 		private string BuildSearchFromTooForScanScroll(int from, int size)
 		{
-			var buildJson = new StringBuilder();
-			buildJson.AppendLine("{");
-			buildJson.AppendLine("\"from\" : " + from + ", \"size\" : " + size);
-			buildJson.AppendLine("}");
-
-			return buildJson.ToString();
+			return "\"from\" : " + from + ", \"size\" : " + size + ",";
 		}
 
-		private string BuildSearchModifiedDateTimeLessThan(DateTime dateTimeUtc)
+		private string BuildSearchModifiedDateTimeLessThan(DateTime dateTimeUtc, string addFromSize = "")
 		{
-			return BuildSearchRange("lt", "modifieddate", dateTimeUtc);
+			return BuildSearchRange("lt", "modifieddate", dateTimeUtc, addFromSize);
 		}
 
-		private string BuildSearchModifiedDateTimeGreaterThan(DateTime dateTimeUtc)
+		private string BuildSearchModifiedDateTimeGreaterThan(DateTime dateTimeUtc, string addFromSize = "")
 		{
-			return BuildSearchRange("gte", "modifieddate", dateTimeUtc);
+			return BuildSearchRange("gte", "modifieddate", dateTimeUtc, addFromSize);
 		}
 
 		//{
@@ -124,11 +119,15 @@ namespace LiveReindexInElasticsearch.Reindex
 		//	   "range": {  "modifieddate": { "lt":   "2003-12-29T00:00:00"  } }
 		//	}
 		//}
-		private string BuildSearchRange(string lessThanOrGreaterThan, string updatePropertyName, DateTime dateTimeUtc)
+		private string BuildSearchRange(string lessThanOrGreaterThan, string updatePropertyName, DateTime dateTimeUtc, string addFromToSize)
 		{
 			string isoDateTime = dateTimeUtc.ToString("s");
 			var buildJson = new StringBuilder();
 			buildJson.AppendLine("{");
+			if (!string.IsNullOrEmpty(addFromToSize))
+			{
+				buildJson.AppendLine(addFromToSize);
+			}
 			buildJson.AppendLine("\"query\": {");
 			buildJson.AppendLine("\"range\": {  \"" + updatePropertyName + "\": { \"" + lessThanOrGreaterThan + "\":   \"" + isoDateTime + "\"  } }");
 			buildJson.AppendLine("}");

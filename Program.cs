@@ -9,7 +9,7 @@ namespace LiveReindexInElasticsearch
 		{
 			var createIndexPersonV1 = new CreateIndexPersonV1();
 
-			#region Setup initial index, not required usually cause the index should already exist...
+			#region Setup initial index, not required usually because the index should already exist...
 			//// CREATE NEW INDEX person_v1 for Person Entity class
 			//createIndexPersonV1.SaveToElasticsearchPerson();
 			//Console.WriteLine("Created new index person_v1 in elasticsearch");
@@ -20,12 +20,9 @@ namespace LiveReindexInElasticsearch
 			createIndexPersonV1.CreatePersonAliasForPersonV1Mapping();
 			Console.WriteLine("Created new alias person for index person_v1 in elasticsearch");
 
-			#endregion  Setup initial index, not required usually cause the index should already exist...
-
-			//Console.ReadLine();
+			#endregion  Setup initial index, not required usually because the index should already exist...
 
 			// STEP 1: CREATE NEW INDEX persons_v2 from INDEX persons_v1 
-
 			DateTime beginDateTime = DateTime.UtcNow.AddYears(-7);
 			var reindex = new ReindexPersonV1ToPersonV2();
 			reindex.Reindex(beginDateTime);
@@ -35,9 +32,9 @@ namespace LiveReindexInElasticsearch
 			reindex.SwitchAliasfromPersonV1IndexToPersonV2Index();
 			Console.WriteLine("Replace index for alias");
 
-			// STEP 3: TODO invalidate the _scroll_id
-
 			// STEP 4: NOW GET ALL THE DOCUMENTS WHICH WERE UPDATED WHILE REINDEXING
+			// NOTE: if the document is updated again in the meantime, it will be overwitten with this method. 
+			// If required, you must check the update timestamp of the item in the new index!
 			reindex.ReindexUpdateChangesWhileReindexing(beginDateTime);
 			Console.WriteLine("Replace index for person documents which were updating while reindexing");
 		}

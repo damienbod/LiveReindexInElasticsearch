@@ -7,7 +7,7 @@ namespace LiveReindexInElasticsearch.Reindex
 	{
 		public override string GetIndexForType(Type type)
 		{
-			return "person_v1";
+			return "persons_v1";
 		}
 	}
 }

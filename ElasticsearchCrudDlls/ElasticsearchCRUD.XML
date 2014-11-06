@@ -25,6 +25,37 @@
             Context will save child objects as separate types in the same index if set. Otherwise child itemas are saved as nested objects.
             </summary>
         </member>
+        <member name="T:ElasticsearchCRUD.ElasticsearchMapping">
+            <summary>
+            Default mapping for your Entity. You can implement this clas to implement your specific mapping if required
+            Everything is lowercase and the index is pluralized
+            </summary>
+        </member>
+        <member name="M:ElasticsearchCRUD.ElasticsearchMapping.MapEntityValues(ElasticsearchCRUD.EntityContextInfo,ElasticsearchCRUD.ElasticsearchCrudJsonWriter,System.Boolean)">
+            <summary>
+            Ovveride this if your default mapping needs to be changed.
+            default type is lowercase for properties, indes pluralized and type to lower
+            </summary>
+            <param name="entityInfo">Information about the entity</param>
+            <param name="elasticsearchCrudJsonWriter">Serializer with added tracing</param>
+            <param name="beginMappingTree">begin new mapping tree</param>
+        </member>
+        <member name="M:ElasticsearchCRUD.ElasticsearchMapping.GetDocumentType(System.Type)">
+            <summary>
+            Override this if you require a special type definitoin for your document type.
+            </summary>
+            <param name="type"></param>
+            <returns>The type used in Elasticsearch for this type</returns>
+        </member>
+        <member name="M:ElasticsearchCRUD.ElasticsearchMapping.GetIndexForType(System.Type)">
+            <summary>
+            Overide this if you need to define the index for your document. 
+            Required if your using a child document type.
+            Default: pluralize the default type
+            </summary>
+            <param name="type">Type of class used</param>
+            <returns>The index used in Elasticsearch for this type</returns>
+        </member>
         <member name="T:ElasticsearchCRUD.ElasticsearchContext">
             <summary>
             Context for crud operations. 
@@ -323,37 +354,6 @@
             </summary>
             <param name="type">Type of class</param>
             <param name="mapping">mapping definition.</param>
-        </member>
-        <member name="T:ElasticsearchCRUD.ElasticsearchMapping">
-            <summary>
-            Default mapping for your Entity. You can implement this clas to implement your specific mapping if required
-            Everything is lowercase and the index is pluralized
-            </summary>
-        </member>
-        <member name="M:ElasticsearchCRUD.ElasticsearchMapping.MapEntityValues(ElasticsearchCRUD.EntityContextInfo,ElasticsearchCRUD.ElasticsearchCrudJsonWriter,System.Boolean)">
-            <summary>
-            Ovveride this if your default mapping needs to be changed.
-            default type is lowercase for properties, indes pluralized and type to lower
-            </summary>
-            <param name="entityInfo">Information about the entity</param>
-            <param name="elasticsearchCrudJsonWriter">Serializer with added tracing</param>
-            <param name="beginMappingTree">begin new mapping tree</param>
-        </member>
-        <member name="M:ElasticsearchCRUD.ElasticsearchMapping.GetDocumentType(System.Type)">
-            <summary>
-            Override this if you require a special type definitoin for your document type.
-            </summary>
-            <param name="type"></param>
-            <returns>The type used in Elasticsearch for this type</returns>
-        </member>
-        <member name="M:ElasticsearchCRUD.ElasticsearchMapping.GetIndexForType(System.Type)">
-            <summary>
-            Overide this if you need to define the index for your document. 
-            Required if your using a child document type.
-            Default: pluralize the default type
-            </summary>
-            <param name="type">Type of class used</param>
-            <returns>The index used in Elasticsearch for this type</returns>
         </member>
     </members>
 </doc>

@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.Linq;
 using ElasticsearchCRUD;
+using ElasticsearchCRUD.Utils;
 using LiveReindexInElasticsearch.SQLDomainModel;
 
-namespace LiveReindexInElasticsearch.Reindex
+namespace LiveReindexInElasticsearch
 {
 	public class CreateIndexPersonV1
 	{
@@ -13,7 +14,7 @@ namespace LiveReindexInElasticsearch.Reindex
 
 		public CreateIndexPersonV1()
 		{
-			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Person), new PersonV1IndexTypeMapping());
+			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Person), MappingUtils.GetElasticsearchMapping("persons_v1"));
 		}
 
 		public void SaveToElasticsearchPerson()
@@ -30,7 +31,7 @@ namespace LiveReindexInElasticsearch.Reindex
 					while (pointer < length)
 					{
 						_stopwatch.Start();
-						var collection = modelPerson.Person.OrderBy(t => t.BusinessEntityID).Skip(pointer).Take(interval).ToList<Person>();
+						var collection = modelPerson.Person.OrderBy(t => t.BusinessEntityID).Skip(pointer).Take(interval).ToList();
 						_stopwatch.Stop();
 						Console.WriteLine("Time taken for select {0} persons: {1}", interval,_stopwatch.Elapsed);
 						_stopwatch.Reset();
@@ -38,7 +39,6 @@ namespace LiveReindexInElasticsearch.Reindex
 						foreach (var item in collection)
 						{
 							elasticsearchContext.AddUpdateDocument(item, item.BusinessEntityID);
-							string t = "yes";
 						}
 
 						_stopwatch.Start();
@@ -53,11 +53,11 @@ namespace LiveReindexInElasticsearch.Reindex
 			}
 		}
 
-		public void CreatePersonAliasForPersonV1Mapping()
+		public void CreatePersonAliasForPersonV1Mapping(string alias)
 		{
 			using (var context = new ElasticsearchContext("http://localhost:9200/", _elasticsearchMappingResolver))
 			{
-				context.AliasCreateForIndex("persons", _elasticsearchMappingResolver.GetElasticSearchMapping(typeof(Person)).GetIndexForType(typeof(Person)));
+				context.AliasCreateForIndex(alias, _elasticsearchMappingResolver.GetElasticSearchMapping(typeof(Person)).GetIndexForType(typeof(Person)));
 			}
 		}
 	}

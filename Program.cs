@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using ElasticsearchCRUD;
+using ElasticsearchCRUD.ContextSearch;
 using ElasticsearchCRUD.Tracing;
 using ElasticsearchCRUD.Utils;
 using LiveReindexInElasticsearch.Reindex;
@@ -39,8 +40,9 @@ namespace LiveReindexInElasticsearch
 			var reindex = new ElasticsearchCrudReindex<Person, PersonV2>(
 				new IndexTypeDescription("persons_v1", "person"), 
 				new IndexTypeDescription("persons_v2", "person"), 
-				"http://localhost.fiddler:9200");
+				"http://localhost:9200");
 
+			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(5,TimeUnits.Second, 1000);
 			reindex.TraceProvider = new ConsoleTraceProvider(TraceEventType.Information);
 
 			reindex.Reindex(

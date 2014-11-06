@@ -39,12 +39,12 @@ namespace LiveReindexInElasticsearch
 			var reindex = new ElasticsearchCrudReindex<Person, PersonV2>(
 				new IndexTypeDescription("persons_v1", "person"), 
 				new IndexTypeDescription("persons_v2", "person"), 
-				"http://localhost:9200",
-				500);
+				"http://localhost.fiddler:9200");
+
 			reindex.TraceProvider = new ConsoleTraceProvider(TraceEventType.Information);
 
 			reindex.Reindex(
-				beginDateTime, 
+				PersonReindexConfiguration.BuildSearchModifiedDateTimeLessThan(beginDateTime), 
 				PersonReindexConfiguration.GetKeyMethod, 
 				PersonReindexConfiguration.CreatePersonV2FromPerson);
 
@@ -62,8 +62,8 @@ namespace LiveReindexInElasticsearch
 			// ---------------------------------------------------------
 			// NOTE: if the document is updated again in the meantime, it will be overwitten with this method. 
 			// If required, you must check the update timestamp of the item in the new index!
-			reindex.ReindexUpdateChangesWhileReindexing(
-				beginDateTime, 
+			reindex.Reindex(
+				PersonReindexConfiguration.BuildSearchModifiedDateTimeGreaterThan(beginDateTime), 
 				PersonReindexConfiguration.GetKeyMethod, 
 				PersonReindexConfiguration.CreatePersonV2FromPerson);
 
@@ -75,3 +75,7 @@ namespace LiveReindexInElasticsearch
 		
 	}
 }
+
+
+// TODO use object for the key
+// TODO set the alias log to info

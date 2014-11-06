@@ -137,22 +137,24 @@
             <param name="documentId"></param>
             <returns>Returns the document of type T</returns>
         </member>
-        <member name="M:ElasticsearchCRUD.ElasticsearchContext.Search``1(System.String,System.String)">
+        <member name="M:ElasticsearchCRUD.ElasticsearchContext.Search``1(System.String,System.String,ElasticsearchCRUD.ContextSearch.ScanAndScrollConfiguration)">
             <summary>
             Search API method to search for anything. any json string which matches the Elasticsearch Search API can be used. Only single index and type search
             </summary>
             <typeparam name="T">Type T used for the index and tpye used in the search</typeparam>
             <param name="searchJsonParameters">JSON string which matches the Elasticsearch Search API</param>
             <param name="scrollId">If this search is part of a scan and scroll, you can add the scrollId to open the context</param>
+            <param name="scanAndScrollConfiguration">Required scroll configuration</param>
             <returns>A collection of documents of type T</returns>
         </member>
-        <member name="M:ElasticsearchCRUD.ElasticsearchContext.SearchAsync``1(System.String,System.String)">
+        <member name="M:ElasticsearchCRUD.ElasticsearchContext.SearchAsync``1(System.String,System.String,ElasticsearchCRUD.ContextSearch.ScanAndScrollConfiguration)">
             <summary>
             async Search API method to search for anything. any json string which matches the Elasticsearch Search API can be used. Only single index and type search
             </summary>
             <typeparam name="T">Type T used for the index and tpye used in the search</typeparam>
             <param name="searchJsonParameters">JSON string which matches the Elasticsearch Search API</param>
             /// <param name="scrollId">If this search is part of a scan and scroll, you can add the scrollId to open the context</param>
+            <param name="scanAndScrollConfiguration">Required scroll configuration</param>
             <returns>A collection of documents of type T in a Task</returns>
         </member>
         <member name="M:ElasticsearchCRUD.ElasticsearchContext.SearchCreateScanAndScroll``1(System.String,ElasticsearchCRUD.ContextSearch.ScanAndScrollConfiguration)">

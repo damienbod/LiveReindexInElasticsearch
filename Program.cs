@@ -17,8 +17,8 @@ namespace LiveReindexInElasticsearch
 
 			#region Setup initial index, not required usually because the index should already exist...
 			//// CREATE NEW INDEX person_v1 for Person Entity class
-			//createIndexPersonV1.SaveToElasticsearchPerson();
-			//Console.WriteLine("Created new index person_v1 in elasticsearch");
+			createIndexPersonV1.SaveToElasticsearchPerson();
+			Console.WriteLine("Created new index person_v1 in elasticsearch");
 
 			////Console.ReadLine();
 

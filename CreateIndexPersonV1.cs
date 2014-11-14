@@ -25,7 +25,7 @@ namespace LiveReindexInElasticsearch
 				using (var modelPerson = new ModelPerson())
 				{
 					int pointer = 0;
-					const int interval = 500;
+					const int interval = 1500;
 					int length = modelPerson.Person.Count();
 
 					while (pointer < length)

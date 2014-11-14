@@ -17,10 +17,10 @@ namespace LiveReindexInElasticsearch
 
 			#region Setup initial index, not required usually because the index should already exist...
 			//// CREATE NEW INDEX person_v1 for Person Entity class
-			createIndexPersonV1.SaveToElasticsearchPerson();
-			Console.WriteLine("Created new index person_v1 in elasticsearch");
+			//createIndexPersonV1.SaveToElasticsearchPerson();
+			//Console.WriteLine("Created new index person_v1 in elasticsearch");
 
-			////Console.ReadLine();
+			//Console.ReadLine();
 
 			// CREATE NEW ALIAS person for INDEX  persons_v1 
 			createIndexPersonV1.CreatePersonAliasForPersonV1Mapping("persons");
@@ -38,16 +38,18 @@ namespace LiveReindexInElasticsearch
 			DateTime beginDateTime = DateTime.UtcNow.AddYears(-7);
 
 			var reindex = new ElasticsearchCrudReindex<Person, PersonV2>(
-				new IndexTypeDescription("persons_v1", "person"), 
-				new IndexTypeDescription("persons_v2", "person"), 
+				new IndexTypeDescription("persons_v1", "person"),
+				new IndexTypeDescription("persons_v2", "person"),
 				"http://localhost:9200");
 
-			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(5,TimeUnits.Second, 1000);
+			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(5, TimeUnits.Second, 1000);
 			reindex.TraceProvider = new ConsoleTraceProvider(TraceEventType.Information);
 
+
+
 			reindex.Reindex(
-				PersonReindexConfiguration.BuildSearchModifiedDateTimeLessThan(beginDateTime), 
-				PersonReindexConfiguration.GetKeyMethod, 
+				PersonReindexConfiguration.BuildSearchModifiedDateTimeLessThan(beginDateTime),
+				PersonReindexConfiguration.GetKeyMethod,
 				PersonReindexConfiguration.CreatePersonV2FromPerson);
 
 			Console.WriteLine("Created new index from version 1 index");
@@ -65,12 +67,18 @@ namespace LiveReindexInElasticsearch
 			// NOTE: if the document is updated again in the meantime, it will be overwitten with this method. 
 			// If required, you must check the update timestamp of the item in the new index!
 			reindex.Reindex(
-				PersonReindexConfiguration.BuildSearchModifiedDateTimeGreaterThan(beginDateTime), 
-				PersonReindexConfiguration.GetKeyMethod, 
+				PersonReindexConfiguration.BuildSearchModifiedDateTimeGreaterThan(beginDateTime),
+				PersonReindexConfiguration.GetKeyMethod,
 				PersonReindexConfiguration.CreatePersonV2FromPerson);
 
 			Console.WriteLine("Replace index for person documents which were updating while reindexing");
 
+			using (var context = new ElasticsearchContext("http://localhost:9200", new ElasticsearchMappingResolver()))
+			{
+				long countBefore = context.Count<Person>(PersonReindexConfiguration.BuildSearchModifiedDateTimeLessThan(beginDateTime));
+				long countAfter = context.Count<Person>(PersonReindexConfiguration.BuildSearchModifiedDateTimeGreaterThan(beginDateTime));
+				Console.WriteLine("Persons: before: {0} After:{1}", countBefore, countAfter);
+			}
 			Console.ReadLine();
 		}
 

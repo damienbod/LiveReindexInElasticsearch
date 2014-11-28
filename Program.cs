@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using ElasticsearchCRUD;
 using ElasticsearchCRUD.ContextSearch;
+using ElasticsearchCRUD.Model;
 using ElasticsearchCRUD.Tracing;
 using ElasticsearchCRUD.Utils;
 using LiveReindexInElasticsearch.Reindex;
@@ -17,10 +18,10 @@ namespace LiveReindexInElasticsearch
 
 			#region Setup initial index, not required usually because the index should already exist...
 			//// CREATE NEW INDEX person_v1 for Person Entity class
-			//createIndexPersonV1.SaveToElasticsearchPerson();
-			//Console.WriteLine("Created new index person_v1 in elasticsearch");
+			createIndexPersonV1.SaveToElasticsearchPerson();
+			Console.WriteLine("Created new index person_v1 in elasticsearch");
 
-			//Console.ReadLine();
+			Console.ReadLine();
 
 			// CREATE NEW ALIAS person for INDEX  persons_v1 
 			createIndexPersonV1.CreatePersonAliasForPersonV1Mapping("persons");

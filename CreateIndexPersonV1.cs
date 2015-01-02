@@ -47,7 +47,7 @@ namespace LiveReindexInElasticsearch
 						Console.WriteLine("Time taken to insert {0} person documents: {1}", interval, _stopwatch.Elapsed);
 						_stopwatch.Reset();
 						pointer = pointer + interval;
-						Console.WriteLine("Transferred: {0} items", pointer);
+						Console.WriteLine("Transferred: {0} items", length);
 					}
 				}
 			}

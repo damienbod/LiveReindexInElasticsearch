@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using ElasticsearchCRUD;
 using ElasticsearchCRUD.ContextSearch;
 using ElasticsearchCRUD.Model;
 using ElasticsearchCRUD.Tracing;
-using ElasticsearchCRUD.Utils;
 using LiveReindexInElasticsearch.Reindex;
 using LiveReindexInElasticsearch.SQLDomainModel;
 
@@ -17,7 +17,7 @@ namespace LiveReindexInElasticsearch
 			var createIndexPersonV1 = new CreateIndexPersonV1();
 
 			#region Setup initial index, not required usually because the index should already exist...
-			//// CREATE NEW INDEX person_v1 for Person Entity class
+			// CREATE NEW INDEX person_v1 for Person Entity class
 			createIndexPersonV1.SaveToElasticsearchPerson();
 			Console.WriteLine("Created new index person_v1 in elasticsearch");
 
@@ -46,8 +46,6 @@ namespace LiveReindexInElasticsearch
 			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(5, TimeUnits.Second, 1000);
 			reindex.TraceProvider = new ConsoleTraceProvider(TraceEventType.Information);
 
-
-
 			reindex.Reindex(
 				PersonReindexConfiguration.BuildSearchModifiedDateTimeLessThan(beginDateTime),
 				PersonReindexConfiguration.GetKeyMethod,
@@ -74,6 +72,8 @@ namespace LiveReindexInElasticsearch
 
 			Console.WriteLine("Replace index for person documents which were updating while reindexing");
 
+			// Wait for Elasticsearch...
+			Thread.Sleep(1500);
 			using (var context = new ElasticsearchContext("http://localhost:9200", new ElasticsearchMappingResolver()))
 			{
 				long countBefore = context.Count<Person>(PersonReindexConfiguration.BuildSearchModifiedDateTimeLessThan(beginDateTime));

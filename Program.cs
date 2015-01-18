@@ -44,7 +44,7 @@ namespace LiveReindexInElasticsearch
 				new IndexTypeDescription("persons_v2", "person"),
 				"http://localhost:9200");
 
-			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(new TimeUnitSecond(1000), 5);
+			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(new TimeUnitSecond(5), 1000);
 			reindex.TraceProvider = new ConsoleTraceProvider(TraceEventType.Information);
 
 			reindex.Reindex(

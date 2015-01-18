@@ -4,6 +4,7 @@ using System.Threading;
 using ElasticsearchCRUD;
 using ElasticsearchCRUD.ContextSearch;
 using ElasticsearchCRUD.Model;
+using ElasticsearchCRUD.Model.Units;
 using ElasticsearchCRUD.Tracing;
 using LiveReindexInElasticsearch.Reindex;
 using LiveReindexInElasticsearch.SQLDomainModel;
@@ -43,7 +44,7 @@ namespace LiveReindexInElasticsearch
 				new IndexTypeDescription("persons_v2", "person"),
 				"http://localhost:9200");
 
-			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(5, TimeUnits.Second, 1000);
+			reindex.ScanAndScrollConfiguration = new ScanAndScrollConfiguration(new TimeUnitSecond(1000), 5);
 			reindex.TraceProvider = new ConsoleTraceProvider(TraceEventType.Information);
 
 			reindex.Reindex(
@@ -87,6 +88,3 @@ namespace LiveReindexInElasticsearch
 	}
 }
 
-
-// TODO use object for the key
-// TODO set the alias log to info

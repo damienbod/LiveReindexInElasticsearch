@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LiveReindexInElasticsearch.SQLDomainModel
 {
-	[Table("Person.Person")]
+    [Table("Person.Person")]
     public partial class Person
     {
         [Key]
